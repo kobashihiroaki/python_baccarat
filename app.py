@@ -32,36 +32,45 @@ def player_card_append(player_card):
 def banker_card_append(banker_card):
     banker_card.append(random.randint(1, 13))
 
-def third_player_card_append(player_card):
-    if (player_card[0] + player_card[1]) < 6:
+def sum_player_card(player_card):
+    return player_card[0] + player_card[1]
+
+def sum_banker_card(banker_card):
+    return banker_card[0] + banker_card[1]
+
+def third_player(player_card):
+    sum_player = sum_player_card(player_card)
+    if (sum_player) < 6:
         player_card_append(player_card)
     return player_card
 
-def third_banker_card_append(player_card, banker_card):
-    if (banker_card[0] + banker_card[1]) < 3:
+def third_banker(player_card, banker_card):
+    sum_player = sum_player_card(player_card)
+    sum_banker = sum_banker_card(banker_card)
+    if sum_banker < 3:
         banker_card_append(banker_card)
-    elif banker_card[0] + banker_card[1] == 3:
-        if (player_card[0] + player_card[1] == 6) or (player_card[0] + player_card[1] == 7):
+    elif sum_banker == 3:
+        if (sum_player == 6) or (sum_player == 7):
             banker_card_append(banker_card)
-        if len(player_card) > 2:
+        elif len(player_card) > 2:
             if player_card[2] != 8:
                 banker_card_append(banker_card)
-    elif banker_card[0] + banker_card[1] == 4:
-        if (player_card[0] + player_card[1] == 6) or (player_card[0] + player_card[1] == 7):
+    elif sum_banker_card == 4:
+        if (sum_player == 6) or (sum_player == 7):
             banker_card_append(banker_card)
-        if len(player_card) > 2:
+        elif len(player_card) > 2:
             if (player_card[2] != 0) or (player_card[2] != 1) or (player_card[2] != 8) or (player_card[2] != 9):
                 banker_card_append(banker_card)
-    elif banker_card[0] + banker_card[1] == 5:
-        if (player_card[0] + player_card[1] == 6) or (player_card[0] + player_card[1] == 7):
+    elif sum_banker_card == 5:
+        if (sum_player == 6) or (sum_player == 7):
             banker_card_append(banker_card)
-        if len(player_card) > 2:
+        elif len(player_card) > 2:
             if (player_card[2] == 4) or (player_card[2] == 5) or (player_card[2] == 6) or (player_card[2] == 7):
                 banker_card_append(banker_card)
-    elif banker_card[0] + banker_card[1] == 6:
-        if (player_card[0] + player_card[1] == 6) or (player_card[0] + player_card[1] == 7):
+    elif sum_banker_card == 6:
+        if (sum_player == 6) or (sum_player == 7):
             banker_card_append(banker_card)
-        if len(player_card) > 2:
+        elif len(player_card) > 2:
             if (player_card[2] == 6) or (player_card[2] == 7):
                 banker_card_append(banker_card)
     return banker_card
@@ -102,8 +111,8 @@ def run():
         print('プレイヤー:' + str(player_card))
         print('バンカー:' + str(banker_card))
         
-        player_card = third_player_card_append(player_card)
-        banker_card = third_banker_card_append(player_card, banker_card)
+        player_card = third_player(player_card)
+        banker_card = third_banker(player_card, banker_card)
 
         if len(player_card) > 2:
             print('プレイヤーに3枚目のカードが追加されました。:' + str(player_card))
