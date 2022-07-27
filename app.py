@@ -76,16 +76,34 @@ def third_banker(player_card, banker_card):
     return banker_card
 
 def calc_player_score(player_card, player_score):
+    player = player_card
+    if player[0] > 10:
+        player[0] = 0
+    if player[1] > 10:
+        player[1] = 0
     if len(player_card) > 2:
-        player_score = (player_card[0] + player_card[1]  + player_card[2]) % 10
+        if player[2] > 10:
+            player[2] = 0
+        player_score = (player[0] + player[1]  + player[2]) % 10
     else:
-        player_score = (player_card[0] + player_card[1]) % 10
+        player_score = (player[0] + player[1]) % 10
     return player_score
 
 def calc_banker_score(banker_card, banker_score):
+    banker = banker_score
+    if banker[0] > 10:
+        banker[0] = 0
+    if banker[1] > 10:
+        banker[1] = 0
     if len(banker_card) > 2:
+        if banker[2] > 10:
+            banker[2] = 0
         banker_score = (banker_card[0] + banker_card[1] + banker_card[2]) % 10
     else:
+        if banker_card[0] > 10:
+            banker_card[0] = 0
+        if banker_card[1] > 10:
+            banker_card[1] = 0
         banker_score = (banker_card[0] + banker_card[1]) % 10
     return banker_score
 
@@ -110,33 +128,24 @@ def run():
         setup(player_card, banker_card)
         print('プレイヤー:' + str(player_card))
         print('バンカー:' + str(banker_card))
-        
+
+        player_score = calc_player_score(player_card, player_score)
+        banker_score = calc_banker_score(banker_card, banker_score)
+
         player_card = third_player(player_card)
         banker_card = third_banker(player_card, banker_card)
 
         if len(player_card) > 2:
             print('プレイヤーに3枚目のカードが追加されました。:' + str(player_card))
-        if len(banker_card) > 2:
-            print('バンカーに3枚目のカードが追加されました。:' + str(banker_card))
-
-        if player_card[0] > 10:
-            player_card[0] = 0
-        if player_card[1] > 10:
-            player_card[1] = 0
-        if len(player_card) > 2:
             if player_card[2] > 10:
                 player_card[2] = 0
-        if banker_card[0] > 10:
-            banker_card[0] = 0
-        if banker_card[1] >10:
-            banker_card[1] = 0
+            player_score = calc_player_score(player_card, player_score)
         if len(banker_card) > 2:
+            print('バンカーに3枚目のカードが追加されました。:' + str(banker_card))
             if banker_card[2] >10:
                 banker_card[2] = 0
-        
-        player_score = calc_player_score(player_card, player_score)
-        banker_score = calc_banker_score(banker_card, banker_score)
-        
+            banker_score = calc_banker_score(banker_card, banker_score)
+                    
         print('プレイヤー:' + str(player_score))
         print('バンカー:' + str(banker_score))
 
