@@ -1,4 +1,5 @@
 import random
+import copy
 
 rates = [
     ['プレイヤー', 2.00, 'プレイヤーの勝ちです!'],
@@ -33,7 +34,7 @@ def banker_card_append(banker_card):
     banker_card.append(random.randint(1, 13))
 
 def sum_player_card(player_card):
-    player = player_card
+    player = copy.deepcopy(player_card)
     if player[0] > 9:
         player[0] = 0
     if player[1] > 9:
@@ -41,7 +42,7 @@ def sum_player_card(player_card):
     return player[0] + player[1]
 
 def sum_banker_card(banker_card):
-    banker = banker_card
+    banker = copy.deepcopy(banker_card)
     if banker[0] > 9:
         banker[0] = 0
     if banker[1] > 9:
@@ -128,78 +129,115 @@ def run():
         player_card = []
         banker_card = []
         # プレイヤー、バンカー、タイのいずれかを選ぶ
+        choice_error = ''
         choice = choose()
-        while not str.isnumeric(choice):
-            print('数字を入れてね')
-            choice = choose()
-        while not(int(choice) == 0) or (int(choice) == 1) or (int(choice) == 2):
-            print('0～2の中から選択してね!')
-            choice = choose()
-        # 数値型に変換
-        choice = int(choice)
-        # 掛け金を入力する
-        bet = betting(pocket)
-
-        if str.isdigit(bet):
-            # 掛け金が0円以下の場合の処理
-            if int(bet) <= 0:
-                print('賭け金は1円以上にしてね!')
-                bet = betting(pocket)
-            # 掛け金が所持金以上の場合の処理
-            elif int(bet) > pocket:
-                print('借金してまで賭けられないよ！')
-                bet = betting(pocket)
-        # 掛け金が数字以外の場合
+        if choice.isnumeric():
+            if (int(choice) == 0) or (int(choice) == 1) or (int(choice) == 2):
+                choice_error = ''
+            else:
+                print('0～2の中から選択してね!')
+                choice_error = 'true'
         else:
-            print('数字を入れてね!')
+            print('数字を入れてね')
+            choice_error = 'true'
+        # choice_errorがtrueならば以下の処理を実行
+        while choice_error == 'true':
+            choice = choose()
+            if choice.isnumeric():
+                if (int(choice) == 0) or (int(choice) == 1) or (int(choice) == 2):
+                    choice_error = ''
+                else:
+                    print('0～2の中から選択してね!')
+                    choice_error = 'true'
+            else:
+                print('数字を入れてね')
+                choice_error = 'true'
+        # choice_errorが空ならば以下の処理を実行
+        if choice_error == '':
+            # 掛け金を入力する
+            bet_error = ''
             bet = betting(pocket)
-        # 入力した掛け金を数値型に変換
-        bet = int(bet)
-        # プレイヤーのカードを2枚、バンカーのカードを2枚セットする
-        setup(player_card, banker_card)
-        # プレイヤーとバンカーのカードを表示する
-        print('プレイヤー:' + str(player_card))
-        print('バンカー:' + str(banker_card))
-        # プレイヤー2枚の合計とバンカー2枚の合計を計算する
-        player_score = sum_player_card(player_card)
-        banker_score = sum_banker_card(banker_card)
-        # 3枚目の追加が必要であれば追加する
-        player_card = third_player(player_card, player_score)
-        banker_card = third_banker(player_card, banker_card, player_score, banker_score)
-        # 3枚目が追加された場合、プレイヤーとバンカーのカードを表示する
-        if len(player_card) > 2:
-            print('プレイヤーに3枚目のカードが追加されました。')
-            print('プレイヤー:' + str(player_card))
-        if len(banker_card) > 2:
-            print('バンカーに3枚目のカードが追加されました。')
-            print('バンカー:' + str(banker_card)) 
-        # プレイヤーの合計とバンカーの合計を計算する
-        player_score = calc_player_score(player_card)
-        banker_score = calc_banker_score(banker_card)
-        # プレイヤーとバンカーの合計値を出力する
-        print('プレイヤーの合計:' + str(player_score))
-        print('バンカーの合計:' + str(banker_score))
-        # プレイヤーとバンカーのどちらが勝ちか判定し、所持金の計算をする
-        if player_score > banker_score:        
-            print(rates[0][2])
-            if (choice == 0):
-                pocket += rates[0][1] * bet
+            
+            if bet.isnumeric():
+                # 掛け金が0円以下の場合の処理
+                if int(bet) <= 0:
+                    print('賭け金は1円以上にしてね!')
+                    bet_error = 'true'
+                # 掛け金が所持金以上の場合の処理
+                elif int(bet) > pocket:
+                    print('借金してまで賭けられないよ！')
+                    bet_error = 'true'
+                else:
+                    bet_error = ''
+            # 掛け金が数字以外の場合
             else:
-                pocket -= bet
-        elif player_score < banker_score:
-            print(rates[1][2])
-            if (choice == 1):
-                pocket += rates[1][1] * bet
-            else:
-                pocket -= bet
-        elif banker_score == player_score:
-            print(rates[2][2])
-            if (choice == 2):
-                pocket += rates[2][1] * bet
-            else:
-                pocket -= bet
+                print('数字を入れてね!')
+                bet_error = 'true'
+            # bet_errorがtrueの場合
+            while (bet_error == 'true'):
+                bet = betting(pocket)
+                if bet.isnumeric():
+                    # 掛け金が0円以下の場合の処理
+                    if int(bet) <= 0:
+                        print('賭け金は1円以上にしてね!')
+                        bet_error = 'true'
+                    # 掛け金が所持金以上の場合の処理
+                    elif int(bet) > pocket:
+                        print('借金してまで賭けられないよ！')
+                        bet_error = 'true'
+                    else:
+                        bet_error = ''
+                # 掛け金が数字以外の場合
+                else:
+                    print('数字を入れてね!')
+                    bet_error = 'true'
+            # bet_errorが空の場合
+            if (bet_error == ''):
+                # プレイヤーのカードを2枚、バンカーのカードを2枚セットする
+                setup(player_card, banker_card)
+                # プレイヤーとバンカーのカードを表示する
+                print('プレイヤー:' + str(player_card))
+                print('バンカー:' + str(banker_card))
+                # プレイヤー2枚の合計とバンカー2枚の合計を計算する
+                player_score = sum_player_card(player_card)
+                banker_score = sum_banker_card(banker_card)
+                # 3枚目の追加が必要であれば追加する
+                player_card = third_player(player_card, player_score)
+                banker_card = third_banker(player_card, banker_card, player_score, banker_score)
+                # 3枚目が追加された場合、プレイヤーとバンカーのカードを表示する
+                if len(player_card) > 2:
+                    print('プレイヤーに3枚目のカードが追加されました。')
+                    print('プレイヤー:' + str(player_card))
+                if len(banker_card) > 2:
+                    print('バンカーに3枚目のカードが追加されました。')
+                    print('バンカー:' + str(banker_card)) 
+                # プレイヤーの合計とバンカーの合計を計算する
+                player_score = calc_player_score(player_card)
+                banker_score = calc_banker_score(banker_card)
+                # プレイヤーとバンカーの合計値を出力する
+                print('プレイヤーの合計:' + str(player_score))
+                print('バンカーの合計:' + str(banker_score))
+                # プレイヤーとバンカーのどちらが勝ちか判定し、所持金の計算をする
+                if player_score > banker_score:        
+                    print(rates[0][2])
+                    if (choice == 0):
+                        pocket += rates[0][1] * int(bet)
+                    else:
+                        pocket -= int(bet)
+                elif player_score < banker_score:
+                    print(rates[1][2])
+                    if (choice == 1):
+                        pocket += rates[1][1] * int(bet)
+                    else:
+                        pocket -= int(bet)
+                elif banker_score == player_score:
+                    print(rates[2][2])
+                    if (choice == 2):
+                        pocket += rates[2][1] * int(bet)
+                    else:
+                        pocket -= bet
 
-        print('pocket:' + str(pocket))
-        if pocket == 0:
-            print('金がないので終了です!')
-        print('---------------------------------------------')
+                print('pocket:' + str(pocket))
+                if pocket == 0:
+                    print('金がないので終了です!')
+                print('---------------------------------------------')
